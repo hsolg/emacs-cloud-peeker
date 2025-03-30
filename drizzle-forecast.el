@@ -5,7 +5,6 @@
 ;; Author: Henrik Solgaard <henrik.solgaard@gmail.com>
 ;; Maintainer: Henrik Solgaard <henrik.solgaard@gmail.com>
 ;; Created: March 28, 2025
-;; Modified: March 28, 2025
 ;; Version: 0.0.1
 ;; Keywords: weather
 ;; Homepage: https://github.com/hsolg/emacs-drizzle-forecast
