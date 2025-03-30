@@ -51,7 +51,12 @@
 (defun drizzle-forecast--format-time (utc-string)
   "Format UTC-STRING as local time."
   (let* ((utc-time (iso8601-parse utc-string)))
-    (format-time-string "%Y-%m-%d %H:%M:%S %Z" (apply 'encode-time utc-time))))
+    (format-time-string "%H:%M:%S %Z" (apply 'encode-time utc-time))))
+
+(defun drizzle-forecast--format-date (utc-string)
+  "Format UTC-STRING as local date."
+  (let* ((utc-time (iso8601-parse utc-string)))
+    (format-time-string "%A, %d %B" (apply 'encode-time utc-time))))
 
 (defun drizzle-forecast-show-forecast ()
   "Show forecast for a preset location."
@@ -64,7 +69,8 @@
       (drizzle-forecast-mode)
       (let ((inhibit-read-only t))
         (erase-buffer)
-        (let* ((timeseries (alist-get 'timeseries (alist-get 'properties forecast))))
+        (let* ((timeseries (alist-get 'timeseries (alist-get 'properties forecast)))
+               (date-name ""))
           (dotimes (i (length timeseries))
             (let* ((reading (aref timeseries i))
                    (time (alist-get 'time reading))
@@ -72,7 +78,13 @@
                    (instant-details (alist-get 'details (alist-get 'instant data)))
                    (next-1-hour-summary (alist-get 'summary (alist-get 'next_1_hours data)))
                    (air-temperature (alist-get 'air_temperature instant-details))
-                   (symbol (alist-get 'symbol_code next-1-hour-summary)))
+                   (symbol (alist-get 'symbol_code next-1-hour-summary))
+                   (dn (drizzle-forecast--format-date time)))
+              (when (not (string= dn date-name))
+                (when (not (string= date-name ""))
+                  (insert "\n"))
+                (insert (propertize (format "%s\n" dn) 'face '(:height 1.5)))
+                (setq date-name dn))
               (insert (propertize (format "%s\t" (drizzle-forecast--format-time (format "%s" time))) 'display '(raise -0.3)))
               (when symbol
                 (if (display-graphic-p)
