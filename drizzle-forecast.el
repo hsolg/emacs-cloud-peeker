@@ -20,8 +20,17 @@
 
 (require 'json)
 (require 'url)
-(require 'evil)
 (require 'iso8601)
+(require 'drizzle-forecast-icons)
+
+(defun drizzle-forecast--translate-symbol (symbol)
+  "Translate SYMBOL to escape sequence."
+  (cond ((symbolp symbol) (format "\x1b[%dm" (cdr (assoc symbol drizzle-forecast--color-codes))))
+        (t symbol)))
+
+(defun drizzle-forecast--map-symbols (symbols)
+  "Map SYMBOLS to output strings."
+  (mapcar #'drizzle-forecast--translate-symbol symbols))
 
 (defvar drizzle-forecast--base-dir
   (file-name-directory (file-truename load-file-name))
@@ -48,6 +57,24 @@
   (let* ((filename (format "%s/icons/weather/%s.svg" drizzle-forecast--base-dir symbol)))
     (create-image filename 'svg nil :height 35)))
 
+(defun flatten (lst)
+  "Flatten a nested list LST."
+  (cond
+   ((null lst) nil)
+   ((listp (car lst))
+    (append (flatten (car lst)) (flatten (cdr lst))))
+   (t (cons (car lst) (flatten (cdr lst))))))
+
+(defun drizzle-forecast--glyphs-for-symbol (symbol)
+  "Get glyphs for SYMBOL."
+  (let* ((codes (cdr (assoc symbol drizzle-forecast--weather-symbols-list))))
+    (if codes
+        (let ((sky (flatten (nth 0 codes)))
+              (air (flatten (nth 1 codes))))
+          `(,(apply #'concat (drizzle-forecast--map-symbols sky))
+            ,(apply #'concat (drizzle-forecast--map-symbols air))))
+      '(symbol ""))))
+
 (defun drizzle-forecast--format-time (utc-string)
   "Format UTC-STRING as local time."
   (let* ((utc-time (iso8601-parse utc-string)))
@@ -58,11 +85,24 @@
   (let* ((utc-time (iso8601-parse utc-string)))
     (format-time-string "%A, %d %B" (apply 'encode-time utc-time))))
 
-(defun drizzle-forecast-show-forecast ()
+(defun drizzle-forecast--display-all-icons ()
+  "Display all console weather icons."
+  (dolist (pair drizzle-forecast--weather-symbols-list)
+    (let* ((name (car pair))
+           (glyphs (drizzle-forecast--glyphs-for-symbol name)))
+      (insert (format "%s\n" name))
+      (insert (format "%s\n" (nth 0 glyphs)))
+      (insert (format "%s\n\n" (nth 1 glyphs)))))
+  (ansi-color-apply-on-region (point-min) (point-max)))
+
+(defun drizzle-forecast-show-forecast (arg)
   "Show forecast for a preset location."
-  (interactive)
-  (let* ((latitude "59.91272")
-         (longitude "10.74609")
+  (interactive "p")
+  (when (/= arg 1)
+    (message "Select location"))
+
+  (let* ((latitude "59.9127")
+         (longitude "10.7460")
          (buffer-name "*Weather forecast*")
          (forecast (drizzle-forecast--fetch-location-forecast latitude longitude)))
     (with-current-buffer-window buffer-name nil nil
@@ -80,17 +120,37 @@
                    (air-temperature (alist-get 'air_temperature instant-details))
                    (symbol (alist-get 'symbol_code next-1-hour-summary))
                    (dn (drizzle-forecast--format-date time)))
-              (when (not (string= dn date-name))
-                (when (not (string= date-name ""))
-                  (insert "\n"))
-                (insert (propertize (format "%s\n" dn) 'face '(:height 1.5)))
-                (setq date-name dn))
-              (insert (propertize (format "%s\t" (drizzle-forecast--format-time (format "%s" time))) 'display '(raise -0.3)))
-              (when symbol
-                (if (display-graphic-p)
-                    (insert-image (drizzle-forecast--image-for-symbol (format "%s" symbol)))
-                  (insert (format "%s\t%s" symbol drizzle-forecast--base-dir))))
-              (insert (propertize (format "\t%.1f °C\n" air-temperature) 'display '(raise -0.3)))))
+              (if (display-graphic-p)
+                  (progn
+                    (when (not (string= dn date-name))
+                      (when (not (string= date-name ""))
+                        (insert "\n"))
+                      (insert (propertize (format "%s\n" dn) 'face '(:height 1.5)))
+                      (setq date-name dn))
+                    (insert (propertize (format "%s    " (drizzle-forecast--format-time (format "%s" time))) 'display '(raise -0.3)))
+                    (when symbol
+                      (insert-image (drizzle-forecast--image-for-symbol (format "%s" symbol))))
+                    (insert (propertize (format "    %3d °C\n" (round air-temperature)) 'display '(raise -0.3))))
+                (progn
+                  (when (not (string= dn date-name))
+                    (when (not (string= date-name ""))
+                      (insert "\n"))
+                    (insert (format "%s\n" dn))
+                    (setq date-name dn))
+                  (insert (format "%s    " (drizzle-forecast--format-time (format "%s" time))))
+                  (let* ((glyphs (when symbol (drizzle-forecast--glyphs-for-symbol (format "%s" symbol))))
+                         (upper (when glyphs (nth 0 glyphs)))
+                         (lower (when glyphs (nth 1 glyphs)))
+                         (pos (current-column)))
+                    (when upper
+                      (insert upper))
+                    (insert (format "    %3d °C\n" (round air-temperature)))
+                    (when lower
+                      (insert (make-string pos ?\s))
+                      (insert lower)
+                      (insert "\n")))))))
+          (unless (display-graphic-p)
+            (ansi-color-apply-on-region (point-min) (point-max)))
           (goto-char (point-min)))))
     (pop-to-buffer buffer-name)))
 
