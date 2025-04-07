@@ -60,7 +60,7 @@
 
 (defun drizzle-forecast--lightning ()
   "Lightning."
-  '(yellow "Z" reset))
+  '(yellow "ϟ" reset))
 
 (defconst drizzle-forecast--weather-symbols-list
   `(("clearsky_day" . (,(drizzle-forecast--clear (drizzle-forecast-sun)) ,(drizzle-forecast--dry)))
