@@ -151,6 +151,9 @@
                       (insert "\n")))))))
           (unless (display-graphic-p)
             (ansi-color-apply-on-region (point-min) (point-max)))
+          (insert "\nData from MET Norway")
+          (when (display-graphic-p)
+            (insert "\nThe icons are copyright (c) 2015-2017 Yr and licensed under the MIT License"))
           (goto-char (point-min)))))
     (pop-to-buffer buffer-name)))
 
