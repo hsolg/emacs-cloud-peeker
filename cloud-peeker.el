@@ -39,7 +39,7 @@
   (file-name-directory (file-truename load-file-name))
   "Base directory of the cloud-peeker package.")
 
-(define-derived-mode cloud-peeker-mode special-mode "Cloud peeker"
+(define-derived-mode cloud-peeker-mode special-mode "Cloud Peeker"
   "Major mode for displaying weather forecasts.")
 
 (defun cloud-peeker--search-locations (string)
