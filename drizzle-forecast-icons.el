@@ -52,7 +52,7 @@
 
 (defun drizzle-forecast--dry ()
   "No precipitation."
-  '("   "))
+  '())
 
 (defun drizzle-forecast--fog ()
   "Fog."
