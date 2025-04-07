@@ -188,8 +188,9 @@
                    (data (alist-get 'data reading))
                    (instant-details (alist-get 'details (alist-get 'instant data)))
                    (next-1-hour-summary (alist-get 'summary (alist-get 'next_1_hours data)))
+                   (next-6-hour-summary (alist-get 'summary (alist-get 'next_6_hours data)))
                    (air-temperature (alist-get 'air_temperature instant-details))
-                   (symbol (alist-get 'symbol_code next-1-hour-summary))
+                   (symbol (or (alist-get 'symbol_code next-1-hour-summary) (alist-get 'symbol_code next-6-hour-summary)))
                    (dn (drizzle-forecast--format-date time)))
               (when symbol (if (display-graphic-p)
                                (progn
