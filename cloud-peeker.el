@@ -140,8 +140,13 @@
 
 (defun cloud-peeker--format-date (utc-string)
   "Format UTC-STRING as local date."
-  (let* ((utc-time (iso8601-parse utc-string)))
-    (format-time-string "%A, %d %B" (apply 'encode-time utc-time))))
+  (let* ((locale (or (getenv "LC_TIME") (getenv "LANG") "en_US"))
+         (date-format (cond
+                       ((string-match-p "\\`\\(en_US\\|en_PH\\|en_BZ\\)" locale) "%A, %B %e")
+                       ((string-match-p "\\`\\(zh\\|ja\\|ko\\)" locale) "%m月%e日")
+                       (t "%A, %e %B")))
+         (utc-time (iso8601-parse utc-string)))
+    (format-time-string date-format (apply 'encode-time utc-time))))
 
 (defun cloud-peeker--display-all-icons ()
   "Display all console weather icons."
