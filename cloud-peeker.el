@@ -133,6 +133,20 @@
             ,(apply #'concat (cloud-peeker--map-symbols air))))
       '(symbol ""))))
 
+(defun cloud-peeker--wind-arrow (direction)
+  "Get wind arrow for wind DIRECTION."
+  (let ((offset (/ 45 2)))
+    (cond
+     ((< direction (- 45 offset)) "↓")
+     ((< direction (- 90 offset)) "↙")
+     ((< direction (- 135 offset)) "←")
+     ((< direction (- 180 offset)) "↖")
+     ((< direction (- 225 offset)) "↑")
+     ((< direction (- 270 offset)) "↗")
+     ((< direction (- 315 offset)) "→")
+     ((< direction (- 360 offset)) "↘")
+     (t "↓"))))
+
 (defun cloud-peeker--format-time (utc-string)
   "Format UTC-STRING as local time."
   (let* ((utc-time (iso8601-parse utc-string)))
@@ -203,10 +217,16 @@ With a prefix ARG, select a new location."
                    (time (alist-get 'time reading))
                    (data (alist-get 'data reading))
                    (instant-details (alist-get 'details (alist-get 'instant data)))
-                   (next-1-hour-summary (alist-get 'summary (alist-get 'next_1_hours data)))
-                   (next-6-hour-summary (alist-get 'summary (alist-get 'next_6_hours data)))
+                   (next-1-hour (alist-get 'next_1_hours data))
+                   (next-6-hour (alist-get 'next_6_hours data))
+                   (next-period (or next-1-hour next-6-hour))
+                   (period-summary (alist-get 'summary next-period))
+                   (period-details (alist-get 'details next-period))
                    (air-temperature (alist-get 'air_temperature instant-details))
-                   (symbol (or (alist-get 'symbol_code next-1-hour-summary) (alist-get 'symbol_code next-6-hour-summary)))
+                   (wind-from-direction (alist-get 'wind_from_direction instant-details))
+                   (wind-speed (alist-get 'wind_speed instant-details))
+                   (symbol (alist-get 'symbol_code period-summary))
+                   (precipitation-amount (alist-get 'precipitation_amount period-details))
                    (dn (cloud-peeker--format-date time)))
               (when symbol (if (display-graphic-p)
                                (progn
@@ -218,7 +238,12 @@ With a prefix ARG, select a new location."
                                  (insert (propertize (format "%s    " (cloud-peeker--format-time (format "%s" time))) 'display '(raise -0.3)))
                                  (when symbol
                                    (insert-image (cloud-peeker--image-for-symbol (format "%s" symbol))))
-                                 (insert (propertize (format "    %3d °C\n" (round air-temperature)) 'display '(raise -0.3))))
+                                 (insert (propertize (format "    %3d °C" (round air-temperature)) 'display '(raise -0.3)))
+                                 (let ((precipitation (if (> precipitation-amount 0)
+                                                          (propertize (format "%4.1f mm" precipitation-amount) 'display '(raise -0.3))
+                                                        "       ")))
+                                   (insert (propertize (format "    %s" precipitation) 'display '(raise -0.3))))
+                                 (insert (propertize (format "    %2d m/s %s\n" (round wind-speed) (cloud-peeker--wind-arrow wind-from-direction)) 'display '(raise -0.3))))
                              (progn
                                (when (not (string= dn date-name))
                                  (when (not (string= date-name ""))
@@ -232,7 +257,12 @@ With a prefix ARG, select a new location."
                                       (pos (current-column)))
                                  (when upper
                                    (insert upper))
-                                 (insert (format "    %3d °C\n" (round air-temperature)))
+                                 (insert (format "    %3d °C" (round air-temperature)))
+                                 (let ((precipitation (if (> precipitation-amount 0)
+                                                          (format "%4.1f mm" precipitation-amount)
+                                                        "       ")))
+                                   (insert (format "    %s" precipitation)))
+                                 (insert (format "    %2d m/s %s\n" (round wind-speed) (cloud-peeker--wind-arrow wind-from-direction)))
                                  (when (not (string-empty-p lower))
                                    (insert (make-string pos ?\s))
                                    (insert lower)
