@@ -1,0 +1,75 @@
+#+TITLE: Cloud Peeker
+#+AUTHOR: Henrik Solgaard
+#+OPTIONS: toc:nil
+
+* Overview
+
+~cloud-peeker~ is an Emacs package that displays weather forecast from
+met.no.
+
+[[./weather-forecast-oslo-console.png]]
+
+[[./weather-forecast-oslo-gui.png]]
+
+* Installation
+
+** Using MELPA (the package is not available from MELPA yet!)
+
+1. Ensure MELPA is added to your package archives:
+
+   #+begin_src emacs-lisp
+   (require 'package)
+   (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+   (package-initialize)
+   #+end_src
+
+2. Install ~cloud-peeker~:
+
+   #+begin_src emacs-lisp
+   (package-install 'cloud-peeker)
+   #+end_src
+
+** Using Doom Emacs
+
+Add ~cloud-peeker~ to your ~packages.el~:
+
+#+begin_src emacs-lisp
+(package! cloud-peeker :recipe (:host github :repo "hsolg/emacs-cloud-peeker"))
+#+end_src
+
+Then run:
+
+#+begin_src shell
+doom sync
+#+end_src
+
+Restart Emacs or run ~M-x doom/reload~.
+
+Configure the package:
+
+#+begin_src emacs-lisp
+(use-package! cloud-peeker
+  :commands (cloud-peeker-show-forecast)
+  :init
+  ;; Add key binding (optional)
+  (map! :leader
+        :desc "Show weather forecast"
+        "z w" #'cloud-peeker-show-forecast)
+
+  ;; Use Vim motions in the weather forecast buffer (optional)
+  (with-eval-after-load 'evil
+    (evil-set-initial-state 'cloud-peeker-mode 'motion)))
+#+end_src
+
+* Usage
+
+The command cloud-peeker-show-forecast displays weather
+forecast for a selected location. The first time the command
+is invoked, it will display a search prompt in the minibuffer. The
+next time it is invoked, it will remember the previous selection. To
+select a new location, invoke the command with a prefix argument (typically
+C-u) to display the search prompt again.
+
+* License
+
+GPL-3+
