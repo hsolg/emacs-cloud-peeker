@@ -26,6 +26,16 @@
 
 (persist-defvar cloud-peeker-selected-location nil "Selected location (lat, lon)")
 
+(defgroup cloud-peeker nil
+  "Customization group for `cloud-peeker.el`."
+  :prefix "cloud-peeker-"
+  :group 'applications)
+
+(defcustom cloud-peeker-geonames-account-name nil
+  "Set your own GeoNames account name (recommended because of rate limit)."
+  :type 'string
+  :group 'cloud-peeker)
+
 (defun cloud-peeker--translate-symbol (symbol)
   "Translate SYMBOL to escape sequence."
   (cond ((symbolp symbol) (format "\x1b[%dm" (cdr (assoc symbol cloud-peeker--color-codes))))
@@ -45,7 +55,8 @@
 (defun cloud-peeker--search-locations (string)
   "Search for location names that contain STRING with the GeoNames API."
   (let* ((url-request-method "GET")
-         (url (format "http://api.geonames.org/search?q=%s&type=json&style=full&isNameRequired=true&username=emacs_cloud_peeker" string))
+         (geonames-account-name (or cloud-peeker-geonames-account-name "emacs_cloud_peeker"))
+         (url (format "http://api.geonames.org/search?q=%s&type=json&style=full&isNameRequired=true&username=%s" string geonames-account-name))
          (url-request-extra-headers '(("Et-Client-Name" . "emacs-cloud-peeker")))
          (buffer (url-retrieve-synchronously url)))
     (when buffer
@@ -227,6 +238,8 @@
           (when (display-graphic-p)
             (insert "\nThe icons are copyright (c) 2015-2017 Yr and licensed under the MIT License"))
           (insert "\nSearch result from GeoNames")
+          (unless cloud-peeker-geonames-account-name
+            (insert "\n\nCreating you own GeoNames account and setting cloud-peeker-geonames-account-name\nis recommended because of rate limits."))
           (goto-char (point-min)))))
     (pop-to-buffer buffer-name)))
 
