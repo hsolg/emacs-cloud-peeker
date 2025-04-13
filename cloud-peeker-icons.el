@@ -1,16 +1,16 @@
 ;;; cloud-peeker-icons.el --- Description -*- lexical-binding: t; -*-
-;;
+
 ;; Copyright (C) 2025 Henrik Solgaard
-;;
+
 ;; Author: Henrik Solgaard <henrik.solgaard@gmail.com>
 ;; Maintainer: Henrik Solgaard <henrik.solgaard@gmail.com>
-;;
+
 ;; This file is not part of GNU Emacs.
-;;
+
 ;;; Commentary:
 ;;
-;;  Console based weather icons
-;;
+;; Console based weather icons
+
 ;;; Code:
 
 (defconst cloud-peeker--color-codes

@@ -1,16 +1,15 @@
 ;;; cloud-peeker.el --- Description -*- lexical-binding: t; -*-
-;;
+
 ;; Copyright (C) 2025 Henrik Solgaard
-;;
+
 ;; Author: Henrik Solgaard <henrik.solgaard@gmail.com>
 ;; Maintainer: Henrik Solgaard <henrik.solgaard@gmail.com>
 ;; Created: March 28, 2025
 ;; Version: 0.0.1
-;; Keywords: weather
 ;; Homepage: https://github.com/hsolg/emacs-cloud-peeker
 ;; Package-Requires: ((emacs "27.1") (persist "0.6.1"))
 ;; License: GPL-3+
-;;
+
 ;; This file is not part of GNU Emacs.
 
 ;; This program is free software: you can redistribute it and/or modify it under
@@ -28,7 +27,7 @@
 
 ;;; Commentary:
 ;;
-;;  Display weather forecast from met.no.
+;; Display weather forecast from met.no.
 ;;
 ;;; Code:
 
