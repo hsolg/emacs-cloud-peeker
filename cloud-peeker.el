@@ -8,7 +8,7 @@
 ;; Version: 0.0.1
 ;; Keywords: weather
 ;; Homepage: https://github.com/hsolg/emacs-cloud-peeker
-;; Package-Requires: ((emacs "27.1"))
+;; Package-Requires: ((emacs "27.1") (persist "0.6.1"))
 ;; License: GPL-3+
 ;;
 ;; This file is not part of GNU Emacs.
