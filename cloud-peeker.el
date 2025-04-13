@@ -171,10 +171,10 @@
     selected-location-coordinates))
 
 (defun cloud-peeker-show-forecast (arg)
-  "Show forecast for a selected location."
+  "Show forecast for a selected location.
+
+With a prefix ARG, select a new location."
   (interactive "p")
-  (when (/= arg 1)
-    (message "Select location"))
 
   (let* ((location (if (or (/= arg 1) (not cloud-peeker-selected-location))
                        (cloud-peeker--prompt-location)
