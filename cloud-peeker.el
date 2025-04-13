@@ -226,6 +226,7 @@
           (insert "\nData from MET Norway")
           (when (display-graphic-p)
             (insert "\nThe icons are copyright (c) 2015-2017 Yr and licensed under the MIT License"))
+          (insert "\nSearch result from GeoNames")
           (goto-char (point-min)))))
     (pop-to-buffer buffer-name)))
 
