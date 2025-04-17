@@ -1,10 +1,10 @@
-#+TITLE: Cloud Peeker
+#+TITLE: Weather Scout
 #+AUTHOR: Henrik Solgaard
 #+OPTIONS: toc:nil
 
 * Overview
 
-~cloud-peeker~ is an Emacs package that displays weather forecast from
+~weather-scout~ is an Emacs package that displays weather forecast from
 met.no.
 
 [[./weather-forecast-oslo-console.png]]
@@ -23,18 +23,18 @@ met.no.
    (package-initialize)
    #+end_src
 
-2. Install ~cloud-peeker~:
+2. Install ~weather-scout~:
 
    #+begin_src emacs-lisp
-   (package-install 'cloud-peeker)
+   (package-install 'weather-scout)
    #+end_src
 
 ** Using Doom Emacs
 
-Add ~cloud-peeker~ to your ~packages.el~:
+Add ~weather-scout~ to your ~packages.el~:
 
 #+begin_src emacs-lisp
-(package! cloud-peeker :recipe (:host github :repo "hsolg/emacs-cloud-peeker"))
+(package! weather-scout :recipe (:host github :repo "hsolg/emacs-weather-scout"))
 #+end_src
 
 Then run:
@@ -48,22 +48,22 @@ Restart Emacs or run ~M-x doom/reload~.
 Configure the package:
 
 #+begin_src emacs-lisp
-(use-package! cloud-peeker
-  :commands (cloud-peeker-show-forecast)
+(use-package! weather-scout
+  :commands (weather-scout-show-forecast)
   :init
   ;; Add key binding (optional)
   (map! :leader
         :desc "Show weather forecast"
-        "z w" #'cloud-peeker-show-forecast)
+        "z w" #'weather-scout-show-forecast)
 
   ;; Use Vim motions in the weather forecast buffer (optional)
   (with-eval-after-load 'evil
-    (evil-set-initial-state 'cloud-peeker-mode 'motion)))
+    (evil-set-initial-state 'weather-scout-mode 'motion)))
 #+end_src
 
 * Usage
 
-The command cloud-peeker-show-forecast displays weather
+The command weather-scout-show-forecast displays weather
 forecast for a selected location. The first time the command
 is invoked, it will display a search prompt in the minibuffer. The
 next time it is invoked, it will remember the previous selection. To

@@ -1,4 +1,4 @@
-;;; cloud-peeker.el --- Description -*- lexical-binding: t; -*-
+;;; weather-scout.el --- Description -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2025 Henrik Solgaard
 
@@ -6,7 +6,7 @@
 ;; Maintainer: Henrik Solgaard <henrik.solgaard@gmail.com>
 ;; Created: March 28, 2025
 ;; Version: 0.0.1
-;; Homepage: https://github.com/hsolg/emacs-cloud-peeker
+;; Homepage: https://github.com/hsolg/emacs-weather-scout
 ;; Package-Requires: ((emacs "27.1") (persist "0.6.1"))
 ;; License: GPL-3+
 
@@ -35,42 +35,42 @@
 (require 'url)
 (require 'iso8601)
 (require 'persist)
-(require 'cloud-peeker-icons)
+(require 'weather-scout-icons)
 
-(persist-defvar cloud-peeker-selected-location nil "Selected location name and coordinates")
+(persist-defvar weather-scout-selected-location nil "Selected location name and coordinates")
 
-(defgroup cloud-peeker nil
-  "Customization group for `cloud-peeker.el`."
-  :prefix "cloud-peeker-"
+(defgroup weather-scout nil
+  "Customization group for `weather-scout.el`."
+  :prefix "weather-scout-"
   :group 'applications)
 
-(defcustom cloud-peeker-geonames-account-name nil
+(defcustom weather-scout-geonames-account-name nil
   "Set your own GeoNames account name (recommended because of rate limit)."
   :type 'string
-  :group 'cloud-peeker)
+  :group 'weather-scout)
 
-(defun cloud-peeker--translate-symbol (symbol)
+(defun weather-scout--translate-symbol (symbol)
   "Translate SYMBOL to escape sequence."
-  (cond ((symbolp symbol) (format "\x1b[%dm" (cdr (assoc symbol cloud-peeker--color-codes))))
+  (cond ((symbolp symbol) (format "\x1b[%dm" (cdr (assoc symbol weather-scout--color-codes))))
         (t symbol)))
 
-(defun cloud-peeker--map-symbols (symbols)
+(defun weather-scout--map-symbols (symbols)
   "Map SYMBOLS to output strings."
-  (mapcar #'cloud-peeker--translate-symbol symbols))
+  (mapcar #'weather-scout--translate-symbol symbols))
 
-(defvar cloud-peeker--base-dir
+(defvar weather-scout--base-dir
   (file-name-directory (file-truename load-file-name))
-  "Base directory of the cloud-peeker package.")
+  "Base directory of the weather-scout package.")
 
-(define-derived-mode cloud-peeker-mode special-mode "Cloud Peeker"
+(define-derived-mode weather-scout-mode special-mode "Weather Scout"
   "Major mode for displaying weather forecasts.")
 
-(defun cloud-peeker--search-locations (string)
+(defun weather-scout--search-locations (string)
   "Search for location names that contain STRING with the GeoNames API."
   (let* ((url-request-method "GET")
-         (geonames-account-name (or cloud-peeker-geonames-account-name "emacs_cloud_peeker"))
+         (geonames-account-name (or weather-scout-geonames-account-name "emacs_weather_scout"))
          (url (format "http://api.geonames.org/search?q=%s&type=json&style=full&isNameRequired=true&username=%s" string geonames-account-name))
-         (url-request-extra-headers '(("Et-Client-Name" . "emacs-cloud-peeker")))
+         (url-request-extra-headers '(("Et-Client-Name" . "emacs-weather-scout")))
          (buffer (url-retrieve-synchronously url)))
     (when buffer
       (with-current-buffer buffer
@@ -80,7 +80,7 @@
           (decode-coding-string json-text 'utf-8)
           (json-parse-string json-text :object-type 'alist))))))
 
-(defun cloud-peeker--remove-duplicates (lst)
+(defun weather-scout--remove-duplicates (lst)
   "Remove consecutive duplicates from LST."
   (cl-reduce (lambda (acc x)
                (if (equal (car acc) x)
@@ -89,13 +89,13 @@
              (reverse lst)
              :initial-value '()))
 
-(defun cloud-peeker--format-location (&rest parts)
+(defun weather-scout--format-location (&rest parts)
   "Format location consisting of multiple, possibly duplicated PARTS."
-  (string-join (cloud-peeker--remove-duplicates (remove "" parts)) ", "))
+  (string-join (weather-scout--remove-duplicates (remove "" parts)) ", "))
 
-(defun cloud-peeker--get-locations (string)
+(defun weather-scout--get-locations (string)
   "Get location with name that contain STRING."
-  (let* ((res (cloud-peeker--search-locations string))
+  (let* ((res (weather-scout--search-locations string))
          (geonames (alist-get 'geonames res))
          (locations (seq-map (lambda (item) (let* ((lat (alist-get 'lat item))
                                                    (lon (alist-get 'lng item))
@@ -103,7 +103,7 @@
                                                    (adminName1 (alist-get 'adminName1 item))
                                                    (adminName2 (alist-get 'adminName2  item))
                                                    (countryName (alist-get 'countryName  item)))
-                                              (cons (cloud-peeker--format-location name adminName2 adminName1 countryName)
+                                              (cons (weather-scout--format-location name adminName2 adminName1 countryName)
                                                     `((name . ,name)
                                                       (city . ,adminName2)
                                                       (county . ,adminName1)
@@ -116,12 +116,12 @@
                             :key #'car :test #'equal)))
     unique-locations))
 
-(defun cloud-peeker--fetch-location-forecast (latitude longitude)
+(defun weather-scout--fetch-location-forecast (latitude longitude)
   "Fetch weather forecast for a given LATITUDE and LONGITUDE from met.no API."
   (message (format "%s %s" latitude longitude))
   (let* ((rounded-latitude (round-coordinate latitude))
          (rounded-longitude (round-coordinate longitude))
-         (url-request-extra-headers '(("User-Agent" . "emacs-cloud-peeker")))
+         (url-request-extra-headers '(("User-Agent" . "emacs-weather-scout")))
          (url (format "https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=%s&lon=%s"
                       rounded-latitude rounded-longitude))
          (buffer (url-retrieve-synchronously url)))
@@ -132,9 +132,9 @@
         (let ((json-object-type 'alist))
           (json-read))))))
 
-(defun cloud-peeker--image-for-symbol (symbol)
+(defun weather-scout--image-for-symbol (symbol)
   "Get image for SYMBOL."
-  (let* ((filename (format "%s/icons/weather/%s.svg" cloud-peeker--base-dir symbol)))
+  (let* ((filename (format "%s/icons/weather/%s.svg" weather-scout--base-dir symbol)))
     (create-image filename 'svg nil :height 35)))
 
 (defun flatten (lst)
@@ -151,17 +151,17 @@
          (rounded (/ (float (round (* num 10000))) 10000.0)))
     (format "%.4f" rounded)))
 
-(defun cloud-peeker--glyphs-for-symbol (symbol)
+(defun weather-scout--glyphs-for-symbol (symbol)
   "Get glyphs for SYMBOL."
-  (let* ((codes (cdr (assoc symbol cloud-peeker--weather-symbols-list))))
+  (let* ((codes (cdr (assoc symbol weather-scout--weather-symbols-list))))
     (if codes
         (let ((sky (flatten (nth 0 codes)))
               (air (flatten (nth 1 codes))))
-          `(,(apply #'concat (cloud-peeker--map-symbols sky))
-            ,(apply #'concat (cloud-peeker--map-symbols air))))
+          `(,(apply #'concat (weather-scout--map-symbols sky))
+            ,(apply #'concat (weather-scout--map-symbols air))))
       '(symbol ""))))
 
-(defun cloud-peeker--wind-arrow (direction)
+(defun weather-scout--wind-arrow (direction)
   "Get wind arrow for wind DIRECTION."
   (let ((offset (/ 45 2)))
     (cond
@@ -175,12 +175,12 @@
      ((< direction (- 360 offset)) "↘")
      (t "↓"))))
 
-(defun cloud-peeker--format-time (utc-string)
+(defun weather-scout--format-time (utc-string)
   "Format UTC-STRING as local time."
   (let* ((utc-time (iso8601-parse utc-string)))
     (format-time-string "%H:%M:%S %Z" (apply 'encode-time utc-time))))
 
-(defun cloud-peeker--format-date (utc-string)
+(defun weather-scout--format-date (utc-string)
   "Format UTC-STRING as local date."
   (let* ((locale (or (getenv "LC_TIME") (getenv "LANG") "en_US"))
          (date-format (cond
@@ -190,37 +190,37 @@
          (utc-time (iso8601-parse utc-string)))
     (format-time-string date-format (apply 'encode-time utc-time))))
 
-(defun cloud-peeker--display-all-icons ()
+(defun weather-scout--display-all-icons ()
   "Display all console weather icons."
-  (dolist (pair cloud-peeker--weather-symbols-list)
+  (dolist (pair weather-scout--weather-symbols-list)
     (let* ((name (car pair))
-           (glyphs (cloud-peeker--glyphs-for-symbol name)))
+           (glyphs (weather-scout--glyphs-for-symbol name)))
       (insert (format "%s\n" name))
       (insert (format "%s\n" (nth 0 glyphs)))
       (insert (format "%s\n\n" (nth 1 glyphs)))))
   (ansi-color-apply-on-region (point-min) (point-max)))
 
-(defun cloud-peeker--select-location (choices)
+(defun weather-scout--select-location (choices)
   "Select location from CHOICES."
   (let* ((selection (completing-read "Select location: " choices nil t)))
     (cdr (assoc selection choices))))
 
-(defun cloud-peeker--prompt-location ()
+(defun weather-scout--prompt-location ()
   "Prompt the user for a location."
   (let* ((user-input (read-string "Location name: "))
-         (choices (cloud-peeker--get-locations user-input))
-         (selected-location-coordinates (cloud-peeker--select-location choices)))
+         (choices (weather-scout--get-locations user-input))
+         (selected-location-coordinates (weather-scout--select-location choices)))
     selected-location-coordinates))
 
-(defun cloud-peeker-show-forecast (arg)
+(defun weather-scout-show-forecast (arg)
   "Show forecast for a selected location.
 
 With a prefix ARG, select a new location."
   (interactive "p")
 
-  (let* ((location (if (or (/= arg 1) (not cloud-peeker-selected-location))
-                       (cloud-peeker--prompt-location)
-                     cloud-peeker-selected-location))
+  (let* ((location (if (or (/= arg 1) (not weather-scout-selected-location))
+                       (weather-scout--prompt-location)
+                     weather-scout-selected-location))
          (latitude (alist-get 'lat location))
          (longitude (alist-get 'lon location))
          (name (alist-get 'name location))
@@ -228,11 +228,11 @@ With a prefix ARG, select a new location."
          (county (alist-get 'county location))
          (country (alist-get 'country location))
          (buffer-name "*Weather forecast*")
-         (forecast (cloud-peeker--fetch-location-forecast latitude longitude)))
-    (setq cloud-peeker-selected-location location)
-    (persist-save 'cloud-peeker-selected-location)
+         (forecast (weather-scout--fetch-location-forecast latitude longitude)))
+    (setq weather-scout-selected-location location)
+    (persist-save 'weather-scout-selected-location)
     (with-current-buffer-window buffer-name nil nil
-      (cloud-peeker-mode)
+      (weather-scout-mode)
       (let ((inhibit-read-only t))
         (erase-buffer)
         (let* ((timeseries (alist-get 'timeseries (alist-get 'properties forecast)))
@@ -255,7 +255,7 @@ With a prefix ARG, select a new location."
                    (wind-speed (alist-get 'wind_speed instant-details))
                    (symbol (alist-get 'symbol_code period-summary))
                    (precipitation-amount (alist-get 'precipitation_amount period-details))
-                   (dn (cloud-peeker--format-date time)))
+                   (dn (weather-scout--format-date time)))
               (when symbol (if (display-graphic-p)
                                (progn
                                  (when (not (string= dn date-name))
@@ -263,23 +263,23 @@ With a prefix ARG, select a new location."
                                      (insert "\n"))
                                    (insert (propertize (format "%s\n" dn) 'face '(:height 1.5)))
                                    (setq date-name dn))
-                                 (insert (propertize (format "%s    " (cloud-peeker--format-time (format "%s" time))) 'display '(raise -0.3)))
+                                 (insert (propertize (format "%s    " (weather-scout--format-time (format "%s" time))) 'display '(raise -0.3)))
                                  (when symbol
-                                   (insert-image (cloud-peeker--image-for-symbol (format "%s" symbol))))
+                                   (insert-image (weather-scout--image-for-symbol (format "%s" symbol))))
                                  (insert (propertize (format "    %3d °C" (round air-temperature)) 'display '(raise -0.3)))
                                  (let ((precipitation (if (> precipitation-amount 0)
                                                           (propertize (format "%4.1f mm" precipitation-amount) 'display '(raise -0.3))
                                                         "       ")))
                                    (insert (propertize (format "    %s" precipitation) 'display '(raise -0.3))))
-                                 (insert (propertize (format "    %2d m/s %s\n" (round wind-speed) (cloud-peeker--wind-arrow wind-from-direction)) 'display '(raise -0.3))))
+                                 (insert (propertize (format "    %2d m/s %s\n" (round wind-speed) (weather-scout--wind-arrow wind-from-direction)) 'display '(raise -0.3))))
                              (progn
                                (when (not (string= dn date-name))
                                  (when (not (string= date-name ""))
                                    (insert "\n"))
                                  (insert (format "%s\n" dn))
                                  (setq date-name dn))
-                               (insert (format "%s    " (cloud-peeker--format-time (format "%s" time))))
-                               (let* ((glyphs (when symbol (cloud-peeker--glyphs-for-symbol (format "%s" symbol))))
+                               (insert (format "%s    " (weather-scout--format-time (format "%s" time))))
+                               (let* ((glyphs (when symbol (weather-scout--glyphs-for-symbol (format "%s" symbol))))
                                       (upper (when glyphs (nth 0 glyphs)))
                                       (lower (when glyphs (nth 1 glyphs)))
                                       (pos (current-column)))
@@ -290,7 +290,7 @@ With a prefix ARG, select a new location."
                                                           (format "%4.1f mm" precipitation-amount)
                                                         "       ")))
                                    (insert (format "    %s" precipitation)))
-                                 (insert (format "    %2d m/s %s\n" (round wind-speed) (cloud-peeker--wind-arrow wind-from-direction)))
+                                 (insert (format "    %2d m/s %s\n" (round wind-speed) (weather-scout--wind-arrow wind-from-direction)))
                                  (when (not (string-empty-p lower))
                                    (insert (make-string pos ?\s))
                                    (insert lower)
@@ -301,10 +301,10 @@ With a prefix ARG, select a new location."
           (when (display-graphic-p)
             (insert "\nThe icons are copyright (c) 2015-2017 Yr and licensed under the MIT License"))
           (insert "\nSearch result from GeoNames")
-          (unless cloud-peeker-geonames-account-name
-            (insert "\n\nCreating you own GeoNames account and setting cloud-peeker-geonames-account-name\nis recommended because of rate limits."))
+          (unless weather-scout-geonames-account-name
+            (insert "\n\nCreating you own GeoNames account and setting weather-scout-geonames-account-name\nis recommended because of rate limits."))
           (goto-char (point-min)))))
     (pop-to-buffer buffer-name)))
 
-(provide 'cloud-peeker)
-;;; cloud-peeker.el ends here
+(provide 'weather-scout)
+;;; weather-scout.el ends here
