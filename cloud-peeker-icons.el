@@ -26,15 +26,15 @@
 
 (defun cloud-peeker-sun ()
   "Sun."
-  '(yellow "O" reset))
+  '(yellow "☀" reset))
 
 (defun cloud-peeker--moon ()
   "Moon."
-  '(yellow ")" reset))
+  '(yellow "☽" reset))
 
 (defun cloud-peeker--polartwilight ()
   "Sun below horizon."
-  '(yellow "0" reset))
+  '(yellow "◒" reset))
 
 (defun cloud-peeker--clear (body)
   "BODY with no clouds."
