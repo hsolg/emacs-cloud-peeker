@@ -80,6 +80,19 @@
           (decode-coding-string json-text 'utf-8)
           (json-parse-string json-text :object-type 'alist))))))
 
+(defun cloud-peeker--remove-duplicates (lst)
+  "Remove consecutive duplicates from LST."
+  (cl-reduce (lambda (acc x)
+               (if (equal (car acc) x)
+                   acc
+                 (cons x acc)))
+             (reverse lst)
+             :initial-value '()))
+
+(defun cloud-peeker--format-location (&rest parts)
+  "Format location consisting of multiple, possibly duplicated PARTS."
+  (string-join (cloud-peeker--remove-duplicates (remove "" parts)) ", "))
+
 (defun cloud-peeker--get-locations (string)
   "Get location with name that contain STRING."
   (let* ((res (cloud-peeker--search-locations string))
@@ -90,15 +103,18 @@
                                                    (adminName1 (alist-get 'adminName1 item))
                                                    (adminName2 (alist-get 'adminName2  item))
                                                    (countryName (alist-get 'countryName  item)))
-                                              (cons (format "%s, %s, %s, %s" name adminName2 adminName1 countryName)
+                                              (cons (cloud-peeker--format-location name adminName2 adminName1 countryName)
                                                     `((name . ,name)
                                                       (city . ,adminName2)
                                                       (county . ,adminName1)
                                                       (country . ,countryName)
                                                       (lat . ,lat)
                                                       (lon . ,lon)))))
-                             geonames)))
-    locations))
+                             geonames))
+         (unique-locations (cl-remove-duplicates
+                            locations
+                            :key #'car :test #'equal)))
+    unique-locations))
 
 (defun cloud-peeker--fetch-location-forecast (latitude longitude)
   "Fetch weather forecast for a given LATITUDE and LONGITUDE from met.no API."
