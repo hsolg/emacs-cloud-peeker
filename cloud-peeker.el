@@ -37,7 +37,7 @@
 (require 'persist)
 (require 'cloud-peeker-icons)
 
-(persist-defvar cloud-peeker-selected-location nil "Selected location (lat, lon)")
+(persist-defvar cloud-peeker-selected-location nil "Selected location name and coordinates")
 
 (defgroup cloud-peeker nil
   "Customization group for `cloud-peeker.el`."
