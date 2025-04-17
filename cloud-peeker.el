@@ -78,7 +78,6 @@
         (re-search-forward "\n\n") ;; Skip HTTP headers
         (let* ((json-text (buffer-substring-no-properties (point) (point-max))))
           (decode-coding-string json-text 'utf-8)
-          ;; (message (assoc 'geonames (json-parse-string json-text :object-type 'alist)))
           (json-parse-string json-text :object-type 'alist))))))
 
 (defun cloud-peeker--get-locations (string)
