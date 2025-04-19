@@ -27,8 +27,15 @@
 
 ;;; Commentary:
 ;;
-;; Display weather forecast from met.no.
+;; Display weather forecast from MET Norway
 ;;
+;; The command weather-scout-show-forecast displays weather forecast for a
+;; selected location from MET Norway. The first time the command is invoked, it
+;; will display a search prompt in the minibuffer. The next time it is invoked,
+;; it will remember the previous selection. To select a new location, invoke the
+;; command with a prefix argument (typically C-u) to display the search prompt
+;; again.
+
 ;;; Code:
 
 (require 'json)
