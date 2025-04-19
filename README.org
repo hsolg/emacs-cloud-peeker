@@ -33,7 +33,7 @@ met.no.
 
 #+begin_src emacs-lisp
 (use-package weather-scout
-  ;; Enable auto-loading (redundant if the command is bound to a key)
+  ;; Enable auto-loading (redundant if the command is bound to a key below)
   :commands (weather-scout-show-forecast)
   ;; Add key binding (optional)
   :bind (("C-c w" . weather-scout-show-forecast)))
