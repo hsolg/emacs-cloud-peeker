@@ -300,7 +300,8 @@ With a prefix ARG, select a new location."
           (when (display-graphic-p)
             (insert "\nThe icons are copyright (c) 2015-2017 Yr and licensed under the MIT License"))
           (insert "\nSearch result from GeoNames")
-          (unless weather-scout-geonames-account-name
+          (if (and (stringp weather-scout-geonames-account-name) (not (string-empty-p weather-scout-geonames-account-name)))
+              (insert "\n\nThank you for using your own GeoNames account.")
             (insert "\n\nCreating you own GeoNames account and setting weather-scout-geonames-account-name\nis recommended because of rate limits."))
           (goto-char (point-min)))))
     (pop-to-buffer buffer-name)))
