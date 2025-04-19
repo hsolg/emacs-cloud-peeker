@@ -29,27 +29,39 @@ met.no.
    (package-install 'weather-scout)
    #+end_src
 
+3. Configure the package:
+
+#+begin_src emacs-lisp
+(use-package weather-scout
+  ;; Enable auto-loading (redundant if the command is bound to a key)
+  :commands (weather-scout-show-forecast)
+  ;; Add key binding (optional)
+  :bind (("C-c w" . weather-scout-show-forecast)))
+#+end_src
+
 ** Using Doom Emacs
 
-Add ~weather-scout~ to your ~packages.el~:
+1. Add ~weather-scout~ to your ~packages.el~:
 
 #+begin_src emacs-lisp
 (package! weather-scout :recipe (:host github :repo "hsolg/emacs-weather-scout"))
 #+end_src
 
-Then run:
+2. Sync Doom packages:
 
 #+begin_src shell
 doom sync
 #+end_src
 
-Restart Emacs or run ~M-x doom/reload~.
+3. Restart Emacs or run ~M-x doom/reload~.
 
-Configure the package:
+4. Configure the package:
 
 #+begin_src emacs-lisp
 (use-package! weather-scout
+  ;; Enable auto-loading
   :commands (weather-scout-show-forecast)
+
   :init
   ;; Add key binding (optional)
   (map! :leader
