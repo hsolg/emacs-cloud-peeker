@@ -118,7 +118,6 @@
 
 (defun weather-scout--fetch-location-forecast (latitude longitude)
   "Fetch weather forecast for a given LATITUDE and LONGITUDE from met.no API."
-  (message (format "%s %s" latitude longitude))
   (let* ((rounded-latitude (round-coordinate latitude))
          (rounded-longitude (round-coordinate longitude))
          (url-request-extra-headers '(("User-Agent" . "emacs-weather-scout")))
