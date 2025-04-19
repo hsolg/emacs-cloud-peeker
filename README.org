@@ -7,9 +7,9 @@
 ~weather-scout~ is an Emacs package that displays weather forecast from
 met.no.
 
-[[./weather-forecast-oslo-console.png]]
+[[./screenshots/weather-forecast-oslo-console.png]]
 
-[[./weather-forecast-oslo-gui.png]]
+[[./screenshots/weather-forecast-oslo-gui.png]]
 
 * Installation
 
