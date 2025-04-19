@@ -52,6 +52,7 @@
 (require 'json)
 (require 'url)
 (require 'iso8601)
+(require 'ansi-color)
 (require 'persist)
 (require 'weather-scout-icons)
 
