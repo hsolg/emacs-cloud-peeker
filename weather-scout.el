@@ -304,7 +304,9 @@ With a prefix ARG, select a new location."
               (insert "\n\nThank you for using your own GeoNames account.")
             (insert "\n\nCreating you own GeoNames account and setting weather-scout-geonames-account-name\nis recommended because of rate limits."))
           (goto-char (point-min)))))
-    (pop-to-buffer buffer-name)))
+    (pop-to-buffer buffer-name)
+    (message "To select a different location, invoke with a prefix argument")
+    (run-at-time "3 sec" nil #'message nil)))
 
 (provide 'weather-scout)
 ;;; weather-scout.el ends here
