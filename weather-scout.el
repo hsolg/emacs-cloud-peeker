@@ -136,8 +136,8 @@
 
 (defun weather-scout--fetch-location-forecast (latitude longitude)
   "Fetch weather forecast for a given LATITUDE and LONGITUDE from met.no API."
-  (let* ((rounded-latitude (round-coordinate latitude))
-         (rounded-longitude (round-coordinate longitude))
+  (let* ((rounded-latitude (weather-scout--round-coordinate latitude))
+         (rounded-longitude (weather-scout--round-coordinate longitude))
          (url-request-extra-headers '(("User-Agent" . "emacs-weather-scout")))
          (url (format "https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=%s&lon=%s"
                       rounded-latitude rounded-longitude))
@@ -154,15 +154,15 @@
   (let* ((filename (format "%s/icons/weather/%s.svg" weather-scout--base-dir symbol)))
     (create-image filename 'svg nil :height 35)))
 
-(defun flatten (lst)
+(defun weather-scout--flatten (lst)
   "Flatten a nested list LST."
   (cond
    ((null lst) nil)
    ((listp (car lst))
-    (append (flatten (car lst)) (flatten (cdr lst))))
-   (t (cons (car lst) (flatten (cdr lst))))))
+    (append (weather-scout--flatten (car lst)) (weather-scout--flatten (cdr lst))))
+   (t (cons (car lst) (weather-scout--flatten (cdr lst))))))
 
-(defun round-coordinate (str)
+(defun weather-scout--round-coordinate (str)
   "Round the decimal number in STR to 4 decimal places and return it as a string."
   (let* ((num (string-to-number str))
          (rounded (/ (float (round (* num 10000))) 10000.0)))
@@ -172,8 +172,8 @@
   "Get glyphs for SYMBOL."
   (let* ((codes (cdr (assoc symbol weather-scout--weather-symbols-list))))
     (if codes
-        (let ((sky (flatten (nth 0 codes)))
-              (air (flatten (nth 1 codes))))
+        (let ((sky (weather-scout--flatten (nth 0 codes)))
+              (air (weather-scout--flatten (nth 1 codes))))
           `(,(apply #'concat (weather-scout--map-symbols sky))
             ,(apply #'concat (weather-scout--map-symbols air))))
       '(symbol ""))))
