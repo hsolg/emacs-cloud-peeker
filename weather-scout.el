@@ -243,9 +243,9 @@ With a prefix ARG, select a new location."
          (latitude (alist-get 'lat location))
          (longitude (alist-get 'lon location))
          (name (alist-get 'name location))
-         (city (alist-get 'city location))
-         (county (alist-get 'county location))
-         (country (alist-get 'country location))
+         ;; (city (alist-get 'city location))
+         ;; (county (alist-get 'county location))
+         ;; (country (alist-get 'country location))
          (buffer-name "*Weather forecast*")
          (forecast (weather-scout--fetch-location-forecast latitude longitude)))
     (with-current-buffer-window buffer-name nil nil
