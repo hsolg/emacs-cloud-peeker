@@ -209,6 +209,8 @@
   (let* ((user-input (read-string "Location name: "))
          (choices (weather-scout--get-locations user-input))
          (selected-location-coordinates (weather-scout--select-location choices)))
+    (setq weather-scout-selected-location selected-location-coordinates)
+    (persist-save 'weather-scout-selected-location)
     selected-location-coordinates))
 
 (defun weather-scout-show-forecast (arg)
@@ -228,8 +230,6 @@ With a prefix ARG, select a new location."
          (country (alist-get 'country location))
          (buffer-name "*Weather forecast*")
          (forecast (weather-scout--fetch-location-forecast latitude longitude)))
-    (setq weather-scout-selected-location location)
-    (persist-save 'weather-scout-selected-location)
     (with-current-buffer-window buffer-name nil nil
       (weather-scout-mode)
       (let ((inhibit-read-only t))
