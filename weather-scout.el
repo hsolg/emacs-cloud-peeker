@@ -196,7 +196,7 @@
 (defun weather-scout--format-time (utc-string)
   "Format UTC-STRING as local time."
   (let* ((utc-time (iso8601-parse utc-string)))
-    (format-time-string "%T %Z" (apply 'encode-time utc-time))))
+    (format-time-string "%T %Z" (apply #'encode-time utc-time))))
 
 (defun weather-scout--format-date (utc-string)
   "Format UTC-STRING as local date."
