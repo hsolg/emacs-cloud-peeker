@@ -56,7 +56,7 @@
 (require 'persist)
 (require 'weather-scout-icons)
 
-(persist-defvar weather-scout-selected-location nil "Selected location name and coordinates")
+(persist-defvar weather-scout-selected-location nil "Selected location name and coordinates.")
 
 (defgroup weather-scout nil
   "Customization group for `weather-scout.el`."
