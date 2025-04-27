@@ -1,4 +1,4 @@
-;;; weather-scout.el --- Description -*- lexical-binding: t; -*-
+;;; weather-scout.el --- Display weather forecast from MET Norway -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2025 Henrik Solgaard
 
