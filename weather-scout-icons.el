@@ -4,6 +4,8 @@
 
 ;; Author: Henrik Solgaard <henrik.solgaard@gmail.com>
 ;; Maintainer: Henrik Solgaard <henrik.solgaard@gmail.com>
+;; Homepage: https://github.com/hsolg/emacs-weather-scout
+;; Package-Requires: ((emacs "27.1"))
 ;; License: GPL-3+
 
 ;; This file is not part of GNU Emacs.
