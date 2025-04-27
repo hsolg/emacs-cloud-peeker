@@ -1,4 +1,4 @@
-;;; weather-scout-icons.el --- Description -*- lexical-binding: t; -*-
+;;; weather-scout-icons.el --- Console based weather icons -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2025 Henrik Solgaard
 
