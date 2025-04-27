@@ -206,7 +206,7 @@
                        ((string-match-p "\\`\\(zh\\|ja\\|ko\\)" locale) "%m月%e日")
                        (t "%A, %e %B")))
          (utc-time (iso8601-parse utc-string)))
-    (format-time-string date-format (apply 'encode-time utc-time))))
+    (format-time-string date-format (apply #'encode-time utc-time))))
 
 (defun weather-scout--display-all-icons ()
   "Display all console weather icons."
