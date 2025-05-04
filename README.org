@@ -2,6 +2,8 @@
 #+AUTHOR: Henrik Solgaard
 #+OPTIONS: toc:nil
 
+[[https://melpa.org/#/weather-scout][file:https://melpa.org/packages/weather-scout-badge.svg]]
+
 * Overview
 
 ~weather-scout~ is an Emacs package that displays weather forecast from
